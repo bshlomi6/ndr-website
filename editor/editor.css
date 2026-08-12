@@ -1,0 +1,242 @@
+/* =========================================================
+   עורך חזותי צף — נטען רק דרך שרת הפיתוח (editor/server.py)
+   לא נשמר לעולם בתוך קבצי האתר.
+========================================================= */
+
+#nedEditor,
+#nedEditor * {
+  box-sizing: border-box;
+  font-family: 'Heebo', -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+/* ---------- כפתור צף ---------- */
+#nedToggle {
+  position: fixed;
+  bottom: 28px;
+  left: 92px;
+  z-index: 2147483000;
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  background: linear-gradient(135deg, #52c9f0, #004890);
+  box-shadow: 0 12px 30px rgba(0, 72, 144, .45);
+  transition: transform .3s cubic-bezier(.16, .84, .36, 1), box-shadow .3s;
+}
+#nedToggle:hover { transform: translateY(-3px) scale(1.05); }
+#nedToggle svg { width: 24px; height: 24px; fill: none; stroke: currentColor; stroke-width: 1.9; stroke-linecap: round; stroke-linejoin: round; }
+#nedToggle.is-active { background: linear-gradient(135deg, #ff9a3c, #e2571e); box-shadow: 0 12px 30px rgba(226, 87, 30, .5); }
+
+/* ---------- פאנל ---------- */
+#nedPanel {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: 340px;
+  max-width: 92vw;
+  z-index: 2147483001;
+  background: #071f3d;
+  color: #eaf3fb;
+  direction: rtl;
+  text-align: right;
+  display: flex;
+  flex-direction: column;
+  box-shadow: -18px 0 50px rgba(2, 12, 26, .5);
+  transform: translateX(100%);
+  transition: transform .42s cubic-bezier(.16, .84, .36, 1);
+  overflow: hidden;
+}
+#nedPanel.is-open { transform: translateX(0); }
+
+.ned-head {
+  padding: 20px 20px 16px;
+  border-bottom: 1px solid rgba(255, 255, 255, .1);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  flex-shrink: 0;
+}
+.ned-head h2 { margin: 0; font-size: 1.05rem; font-weight: 800; }
+.ned-head p { margin: 4px 0 0; font-size: .74rem; color: rgba(255, 255, 255, .5); }
+.ned-x {
+  width: 34px; height: 34px; border-radius: 50%; border: none; cursor: pointer;
+  background: rgba(255, 255, 255, .08); color: #fff;
+  display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+}
+.ned-x:hover { background: rgba(255, 255, 255, .16); }
+.ned-x svg { width: 16px; height: 16px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; }
+
+.ned-body { flex: 1; overflow-y: auto; padding: 18px 20px 24px; }
+.ned-body::-webkit-scrollbar { width: 8px; }
+.ned-body::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, .18); border-radius: 8px; }
+
+.ned-sec { margin-bottom: 26px; }
+.ned-sec > h3 {
+  margin: 0 0 12px;
+  font-size: .72rem;
+  font-weight: 800;
+  letter-spacing: .04em;
+  color: #8fe0ff;
+  text-transform: uppercase;
+}
+
+/* מתג מצב עריכה */
+.ned-switch {
+  display: flex; align-items: center; justify-content: space-between; gap: 12px;
+  background: rgba(255, 255, 255, .06);
+  border: 1px solid rgba(255, 255, 255, .12);
+  border-radius: 14px; padding: 14px 16px; cursor: pointer;
+  transition: background .25s;
+}
+.ned-switch:hover { background: rgba(255, 255, 255, .1); }
+.ned-switch strong { display: block; font-size: .92rem; }
+.ned-switch span { display: block; font-size: .72rem; color: rgba(255, 255, 255, .5); margin-top: 2px; }
+.ned-track {
+  width: 46px; height: 26px; border-radius: 20px; background: rgba(255, 255, 255, .2);
+  position: relative; flex-shrink: 0; transition: background .25s;
+}
+.ned-track::after {
+  content: ''; position: absolute; top: 3px; right: 3px;
+  width: 20px; height: 20px; border-radius: 50%; background: #fff;
+  transition: transform .25s cubic-bezier(.16, .84, .36, 1);
+}
+.ned-switch.is-on .ned-track { background: #34c759; }
+.ned-switch.is-on .ned-track::after { transform: translateX(-20px); }
+
+.ned-btn {
+  width: 100%; border: none; cursor: pointer; border-radius: 12px;
+  padding: 13px 16px; font-size: .9rem; font-weight: 700;
+  display: flex; align-items: center; justify-content: center; gap: 8px;
+  transition: transform .25s, box-shadow .25s, background .25s, opacity .25s;
+}
+.ned-btn svg { width: 17px; height: 17px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+.ned-btn-primary { background: linear-gradient(135deg, #52c9f0, #004890); color: #fff; box-shadow: 0 10px 24px rgba(0, 72, 144, .4); }
+.ned-btn-primary:hover:not(:disabled) { transform: translateY(-2px); }
+.ned-btn-ghost { background: rgba(255, 255, 255, .08); color: #fff; border: 1px solid rgba(255, 255, 255, .16); margin-top: 10px; }
+.ned-btn-ghost:hover:not(:disabled) { background: rgba(255, 255, 255, .15); }
+.ned-btn:disabled { opacity: .45; cursor: not-allowed; }
+
+.ned-pages { display: grid; gap: 6px; }
+.ned-pages a {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 10px 14px; border-radius: 10px; font-size: .85rem; font-weight: 600;
+  color: rgba(255, 255, 255, .78); text-decoration: none;
+  background: rgba(255, 255, 255, .05); transition: background .22s, color .22s;
+}
+.ned-pages a:hover { background: rgba(255, 255, 255, .12); color: #fff; }
+.ned-pages a.is-current { background: linear-gradient(135deg, rgba(82, 201, 240, .28), rgba(0, 72, 144, .5)); color: #fff; }
+.ned-pages a small { font-size: .68rem; color: rgba(255, 255, 255, .45); }
+
+.ned-hint {
+  font-size: .76rem; line-height: 1.75; color: rgba(255, 255, 255, .58);
+  background: rgba(255, 255, 255, .05); border-radius: 12px; padding: 14px 16px;
+}
+.ned-hint b { color: #8fe0ff; }
+.ned-hint kbd {
+  background: rgba(255, 255, 255, .14); border-radius: 5px; padding: 1px 6px;
+  font-size: .72rem; font-family: ui-monospace, monospace;
+}
+
+.ned-count {
+  display: inline-flex; align-items: center; justify-content: center;
+  min-width: 20px; height: 20px; padding: 0 6px; border-radius: 10px;
+  background: #ff9a3c; color: #3a1d05; font-size: .72rem; font-weight: 800;
+}
+
+.ned-foot {
+  padding: 16px 20px; border-top: 1px solid rgba(255, 255, 255, .1);
+  flex-shrink: 0; background: rgba(0, 0, 0, .18);
+}
+.ned-status { font-size: .76rem; color: rgba(255, 255, 255, .55); margin: 10px 0 0; text-align: center; min-height: 18px; }
+.ned-status.is-ok { color: #6ee7a8; }
+.ned-status.is-err { color: #ff8f8f; }
+
+/* ---------- מצב עריכה על העמוד ---------- */
+html.ned-editing [data-ned-editable]:hover {
+  outline: 2px dashed rgba(82, 201, 240, .85) !important;
+  outline-offset: 3px;
+  cursor: text;
+  background: rgba(82, 201, 240, .07) !important;
+}
+html.ned-editing img:hover {
+  outline: 3px solid #ff9a3c !important;
+  outline-offset: 2px;
+  cursor: pointer;
+}
+html.ned-editing [contenteditable="true"] {
+  outline: 2px solid #52c9f0 !important;
+  outline-offset: 3px;
+  background: rgba(82, 201, 240, .1) !important;
+  cursor: text;
+}
+html.ned-editing .ned-dirty {
+  box-shadow: inset 0 0 0 2px rgba(255, 154, 60, .55);
+}
+/* בזמן עריכה — לעצור אנימציות שמסתירות תוכן */
+html.ned-editing [data-reveal] {
+  opacity: 1 !important;
+  transform: none !important;
+}
+html.ned-editing .preloader { display: none !important; }
+
+/* באנר מצב עריכה */
+#nedBanner {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 2147482999;
+  background: linear-gradient(90deg, #ff9a3c, #e2571e);
+  color: #fff; font-size: .8rem; font-weight: 700; text-align: center;
+  padding: 7px 12px; direction: rtl;
+  transform: translateY(-100%); transition: transform .35s cubic-bezier(.16, .84, .36, 1);
+}
+#nedBanner.is-on { transform: translateY(0); }
+
+/* ---------- דיאלוג תמונה ---------- */
+#nedDialog {
+  position: fixed; inset: 0; z-index: 2147483002;
+  display: flex; align-items: center; justify-content: center; padding: 24px;
+  background: rgba(3, 16, 32, .72); backdrop-filter: blur(6px);
+  direction: rtl; text-align: right;
+  opacity: 0; visibility: hidden; transition: opacity .3s, visibility .3s;
+}
+#nedDialog.is-open { opacity: 1; visibility: visible; }
+.ned-dialog-panel {
+  background: #0d2949; color: #eaf3fb; border-radius: 20px; padding: 26px;
+  width: 460px; max-width: 100%; box-shadow: 0 30px 70px rgba(0, 0, 0, .5);
+  transform: scale(.94); transition: transform .3s cubic-bezier(.16, .84, .36, 1);
+}
+#nedDialog.is-open .ned-dialog-panel { transform: scale(1); }
+.ned-dialog-panel h3 { margin: 0 0 6px; font-size: 1.1rem; font-weight: 800; }
+.ned-dialog-panel > p { margin: 0 0 18px; font-size: .8rem; color: rgba(255, 255, 255, .55); }
+.ned-preview {
+  width: 100%; height: 150px; border-radius: 12px; object-fit: cover;
+  background: rgba(255, 255, 255, .06); margin-bottom: 16px; display: block;
+}
+.ned-label { display: block; font-size: .76rem; font-weight: 700; color: #8fe0ff; margin: 0 0 6px; }
+.ned-input {
+  width: 100%; padding: 12px 14px; border-radius: 10px; font-size: .85rem;
+  background: rgba(255, 255, 255, .07); border: 1px solid rgba(255, 255, 255, .16);
+  color: #fff; margin-bottom: 14px; direction: ltr; text-align: left;
+}
+.ned-input:focus { outline: none; border-color: #52c9f0; }
+.ned-or { text-align: center; font-size: .74rem; color: rgba(255, 255, 255, .4); margin: 0 0 14px; }
+.ned-file {
+  display: flex; align-items: center; justify-content: center; gap: 8px;
+  padding: 14px; border-radius: 12px; cursor: pointer; font-size: .85rem; font-weight: 700;
+  border: 1.5px dashed rgba(255, 255, 255, .3); color: rgba(255, 255, 255, .8);
+  transition: border-color .25s, background .25s;
+}
+.ned-file:hover { border-color: #52c9f0; background: rgba(82, 201, 240, .1); }
+.ned-file input { display: none; }
+.ned-dialog-actions { display: flex; gap: 10px; margin-top: 20px; }
+.ned-dialog-actions .ned-btn { margin: 0; }
+
+@media (max-width: 600px) {
+  #nedToggle { left: 16px; bottom: 84px; width: 50px; height: 50px; }
+  #nedPanel { width: 100%; }
+}
