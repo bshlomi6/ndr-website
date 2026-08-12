@@ -577,12 +577,14 @@ svg{ width:1em; height:1em; fill:none; stroke:currentColor; stroke-width:1.8; st
 .project-modal-panel{
   position:relative; background:#fff; border-radius: var(--radius-lg); overflow:hidden;
   max-width: 1000px; width:100%; max-height: 90vh; overflow-y:auto;
-  display:grid; grid-template-columns: 1fr 1fr;
+  /* minmax(0,…) ולא 1fr: אחרת רצועת התמונות הממוזערות (רוחב טבעי של
+     16 תמונות ≈ 1200px) מנפחת את עמודת המדיה וסוחטת את הטקסט לרצועה צרה */
+  display:grid; grid-template-columns: minmax(0,1fr) minmax(0,1fr);
   box-shadow: var(--shadow-lg);
   transform: scale(.92) translateY(20px); transition: transform .45s var(--ease);
 }
 .project-modal.is-open .project-modal-panel{ transform: scale(1) translateY(0); }
-.project-modal-media{ min-height: 280px; display:flex; flex-direction:column; }
+.project-modal-media{ min-height: 280px; display:flex; flex-direction:column; min-width:0; }
 .project-modal-body{ padding: 40px 36px; }
 .project-modal-body h3{ font-size:1.5rem; font-weight:800; color: var(--navy); margin: 10px 0 16px; }
 .project-modal-body h4{ font-size:.95rem; font-weight:800; color: var(--blue-dark); margin: 22px 0 8px; }
@@ -612,6 +614,7 @@ svg{ width:1em; height:1em; fill:none; stroke:currentColor; stroke-width:1.8; st
 .pm-thumbs{
   display:flex; gap:8px; padding:10px; overflow-x:auto;
   background:#071f3d; scrollbar-width:thin;
+  min-width:0;   /* מאפשר לרצועה לגלול במקום להרחיב את העמודה */
 }
 .pm-thumbs::-webkit-scrollbar{ height:6px; }
 .pm-thumbs::-webkit-scrollbar-thumb{ background:rgba(255,255,255,.25); border-radius:6px; }
