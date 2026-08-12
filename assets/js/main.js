@@ -167,29 +167,107 @@
   /* ---------- Project modal ---------- */
   const PROJECTS = {
     p1: {
-      img: 'assets/images/project-1.jpg', year: '2025', title: 'קווי מצדה',
-      desc: 'ביצוע קו אספקת מים בקו ראשי בין ערד לאתר מצדה, אשר נועד לתת מענה לגידול בצריכת המים במצדה. הקו מצנרת פוליאתילן בקוטר 225 מ"מ ובאורך של כ-13 ק"מ, והונח בתוואי שטח סלעי מורכב ובעל שינויים טופוגרפיים.',
-      solution: 'ביצוע דרכי גישה ועבודות עפר, שמונה חציות של כביש 3199 (נתיבי ישראל) כולל קרצוף ושחזור אספלט, הקמת חצר חדשה עם מיכל מים 120 מ"ק וחדר חשמל ובקרה, ומערכת ייצור חשמל סולארית עצמאית עם שו"ב מרחוק.'
+      year: '2025', title: 'קווי מצדה',
+      body: [
+        'ביצוע קו אספקת מים בקו ראשי בין ערד לאתר מצדה, אשר נועד לתת מענה לגידול בצריכת המים במצדה. הקו הינו מצנרת פוליאתילן בקוטר 225 מ"מ ובאורך של כ-13 ק"מ, והונח בתוואי שטח סלעי מורכב ובעל שינויים טופוגרפיים.',
+        'העבודה כללה ביצוע דרכי גישה ועבודות עפר, וכן שמונה חציות של כביש 3199 (נתיבי ישראל), כולל קרצוף ושחזור שכבות האספלט לאחר הביצוע. בנוסף, הוקמה חצר חדשה ובוצעה אספקה והתקנה של מיכל מים בנפח 120 מ"ק, הכולל חדר חשמל ובקרה.',
+        'במסגרת הפרויקט הוקמה גם מערכת ייצור חשמל סולארית עצמאית, לצד מערכת שליטה ובקרה מרחוק לניהול מערכת אספקת המים.'
+      ],
+      images: [
+        'assets/images/projects/metzada/metzada-01.jpg',
+        'assets/images/projects/metzada/metzada-02.jpg'
+      ]
     },
     p2: {
-      img: 'assets/images/project-2.jpg', year: '2025', title: 'קווי שיפוט ניר עם',
-      desc: 'פרויקט לניתוק קידוחים מליחים ממערכת אספקת מי השתייה של העיר שדרות, ובמקומם הונחו קווים חדשים לחיזוק והגברת אספקת מי השתייה לעיר. הותקנו קווי מים מפלדה בקטרים 16", 20" ו-24", באורך כולל של כ-10 ק"מ.',
-      solution: 'ביצוע חציות של כבישים ראשיים של נתיבי ישראל וחציות תשתיות שונות בשיטות קידוח אופקיות מתקדמות, ביצוע מבחני לחץ לקווים, הפסקות מים מתואמות והתחברויות לקווים ראשיים.'
+      year: '2025', title: 'קווי שיפוט ניר עם',
+      body: [
+        'בוצע פרויקט לניתוק קידוחים מליחים ממערכת אספקת מי השתייה של העיר שדרות, ובמקומם הונחו קווים חדשים לחיזוק והגברת אספקת מי השתייה לעיר. במסגרת הפרויקט הותקנו קווי מים מפלדה בקטרים 16", 20" ו־24", באורך כולל של כ־10 ק"מ.',
+        'העבודה כללה ביצוע מספר חציות של כבישים ראשיים של נתיבי ישראל וכן חציות תשתיות שונות תוך שימוש בשיטות קידוח אופקיות מתקדמות. כבכלל הפרויקטים, בפרויקט בוצע מבחן לחץ לקווים, הפסקות מים והתחברויות לקווים ראשיים.'
+      ],
+      images: [
+        'assets/images/projects/nir-am/nir-am-01.jpg',
+        'assets/images/projects/nir-am/nir-am-02.jpg',
+        'assets/images/projects/nir-am/nir-am-03.jpg',
+        'assets/images/projects/nir-am/nir-am-04.jpg',
+        'assets/images/projects/nir-am/nir-am-05.jpg',
+        'assets/images/projects/nir-am/nir-am-06.jpg',
+        'assets/images/projects/nir-am/nir-am-07.jpg',
+        'assets/images/projects/nir-am/nir-am-08.jpg',
+        'assets/images/projects/nir-am/nir-am-09.jpg',
+        'assets/images/projects/nir-am/nir-am-10.jpg',
+        'assets/images/projects/nir-am/nir-am-11.jpg',
+        'assets/images/projects/nir-am/nir-am-12.jpg',
+        'assets/images/projects/nir-am/nir-am-13.jpg',
+        'assets/images/projects/nir-am/nir-am-14.jpg'
+      ]
     },
     p3: {
-      img: 'assets/images/project-3.jpg', year: '2025', title: 'כביש 375 קטע מזרחי',
-      desc: 'במסגרת הרחבת כביש 375 של נתיבי ישראל בוצעה העתקה של שני קווי מים של חברת מקורות, קווי פלדה בקטרים 28" ו-32". במקביל בוצעה התאמה ושדרוג של המערכת להגדלת המענה לצריכת המים האזורית.',
-      solution: 'הכנת השטח וחפירת בורות כניסה ויציאה, בניית מערכת דיפון לתמיכה בבורות, חציית הכביש בשיטת AUGER BORING בשרוול פלדה 40" לאורך שלושה מקטעים (60, 37 ו-45 מטר) בסלע קשה ורציף, וביצוע הפסקת מים והפעלת הקווים החדשים.'
+      year: '2025', title: 'כביש 375 קטע מזרחי',
+      body: [
+        'במסגרת הרחבת כביש 375 של נתיבי ישראל בוצעה העתקה של שני קווי מים של חברת מקורות, קווי פלדה בקטרים 28" ו־32". במקביל, בוצעה התאמה ושדרוג של המערכת במטרה להגדיל את המענה לצריכת המים האזורית ולהבטיח אמינות ואספקה יציבה לאורך זמן.'
+      ],
+      listTitle: 'שלבי הפרויקט',
+      list: [
+        'הכנת השטח וחפירות בורות כניסה ויציאה.',
+        'בניית מערכת דיפון לתמיכה בבורות הכניסה.',
+        'חציית הכביש בשיטת AUGER BORING בשרוול פלדה בקוטר 40" לאורך שלושה מקטעים באורכים 60, 37 ו-45 מטר בסלע קשה ורציף.',
+        'ביצוע הפסקת מים והפעלת הקווים החדשים.'
+      ],
+      images: [
+        'assets/images/projects/road-375/road-375-01.jpg',
+        'assets/images/projects/road-375/road-375-02.jpg',
+        'assets/images/projects/road-375/road-375-03.jpg',
+        'assets/images/projects/road-375/road-375-04.jpg',
+        'assets/images/projects/road-375/road-375-05.jpg',
+        'assets/images/projects/road-375/road-375-06.jpg',
+        'assets/images/projects/road-375/road-375-07.jpg',
+        'assets/images/projects/road-375/road-375-08.jpg',
+        'assets/images/projects/road-375/road-375-09.jpg',
+        'assets/images/projects/road-375/road-375-10.jpg',
+        'assets/images/projects/road-375/road-375-11.jpg',
+        'assets/images/projects/road-375/road-375-12.jpg',
+        'assets/images/projects/road-375/road-375-13.jpg',
+        'assets/images/projects/road-375/road-375-14.jpg',
+        'assets/images/projects/road-375/road-375-15.jpg',
+        'assets/images/projects/road-375/road-375-16.jpg'
+      ]
     },
     p4: {
-      img: 'assets/images/project-4.jpg', year: '2020', title: 'קו משאבי שדה',
-      desc: 'ביצוע קו מים ראשי מפלדה בקוטר 28" ובאורך כ-5 ק"מ, מבריכת שדה בוקר צפונה ועד לתחנת שדה בוקר. תוואי הקו הונח בסמיכות לקו דלק 16" של קצא"א לאורך כ-4 ק"מ, כולל חצייה של קו שלוחת רמון 8".',
-      solution: 'תיאומים מלאים עם כלל חברות התשתית הרלוונטיות בדגש על חציות קווי גז ודלק רגישים, והקמת שני קווי מים עיליים מפלדה 24" לעלייה לבריכת שדה בוקר עם בלוקי עיגון לייצוב והבטחת בטיחות הקו בתנאי שטח מורכבים.'
+      year: '2020', title: 'קו משאבי שדה',
+      body: [
+        'בוצע קו מים ראשי מפלדה בקוטר 28" ובאורך של כ־5 ק"מ, מבריכת שדה בוקר צפונה ועד לתחנת שדה בוקר. תוואי הקו הונח בסמיכות לקו דלק 16" של קצא"א לאורך כ־4 ק"מ, כולל חציית הקו הקיים. בנוסף, בוצעה חצייה של קו שלוחת רמון בקוטר 8" של חברת קמ"ד תשתיות נפט ואנרגיה.',
+        'הפרויקט בוצע תוך תיאומים מלאים עם כלל חברות התשתית הרלוונטיות, ובפיקוח ותיאום הדוק בכל שלבי העבודה, בדגש על חציות קווי הגז והדלק הרגישים.',
+        'במסגרת העבודות הוקמו גם שני קווי מים עיליים מפלדה בקוטר 24", לצורך עלייה לבריכת שדה בוקר. הפרויקט כלל התמודדות עם תנאי שטח מורכבים והפרשי גבהים משמעותיים, תוך ביצוע תמיכות באמצעות בלוקי עיגון לייצוב והבטחת בטיחות ואיכות הקו.',
+        'העבודה התאפיינה ברמת מורכבות גבוהה במיוחד ובאתגרים הנדסיים משמעותיים, אשר דרשו תכנון מדויק, תיאום קפדני וביצוע מקצועי בשטח.'
+      ],
+      images: [
+        'assets/images/projects/sde-boker/sde-boker-01.jpg',
+        'assets/images/projects/sde-boker/sde-boker-02.jpg',
+        'assets/images/projects/sde-boker/sde-boker-03.jpg',
+        'assets/images/projects/sde-boker/sde-boker-04.jpg'
+      ]
     },
     p5: {
-      img: 'assets/images/project-5.jpg', year: '2023', title: 'קו מחלק לתל שבע',
-      desc: 'ביצוע קו מים חדש מפלדה בקוטר 20" באורך 100 מטר. תוואי הקו הונח במקביל לכביש הגישה לתל שבע, והמשיך עד לצידה המערבי של מסילת הרכבת באר שבע-דימונה.',
-      solution: 'חציית מסילת רכבת ישראל קו באר שבע-דימונה בקידוח אופקי AUGER BORING בשרוול פלדה 30" באורך 98 מטר בסלע קשה ורציף, חציית כביש של רשות הטבע והגנים, חציית נחל חברון בגשרון עילי מצינור פלדה 20" עם כלונסאות לביסוס, ביצוע מערכות מים על הקו והתחברות לקו פלדה ראשי.'
+      year: '2023', title: 'קו מחלק לתל שבע',
+      body: [
+        'בוצע קו מים חדש מפלדה בקוטר 20" באורך 100 מטר. תוואי הקו הונח במקביל לכביש הגישה לתל שבע, והמשיך עד לצידה המערבי של מסילת הרכבת באר שבע–דימונה.'
+      ],
+      listTitle: 'עבודות בפרויקט',
+      list: [
+        'חציית מסילת רכבת ישראל קו באר שבע–דימונה בקידוח אופקי AUGER BORING בשרוול פלדה בקוטר 30" באורך של 98 מטר בסלע קשה ורציף.',
+        'חציית כביש של רשות הטבע והגנים הכולל עבודות עפר, שחזור אספלט והסדרת השטח.',
+        'חציית נחל חברון באמצעות הקמת גשרון עילי מצינור פלדה 20", כולל כלונסאות לביסוס.',
+        'ביצוע מערכות מים על הקו והתחברות לקו פלדה ראשי והפעלתו.'
+      ],
+      images: [
+        'assets/images/projects/tel-sheva/tel-sheva-01.jpg',
+        'assets/images/projects/tel-sheva/tel-sheva-02.jpg',
+        'assets/images/projects/tel-sheva/tel-sheva-03.jpg',
+        'assets/images/projects/tel-sheva/tel-sheva-04.jpg',
+        'assets/images/projects/tel-sheva/tel-sheva-05.jpg',
+        'assets/images/projects/tel-sheva/tel-sheva-06.jpg',
+        'assets/images/projects/tel-sheva/tel-sheva-07.jpg'
+      ]
     }
   };
 
@@ -198,18 +276,61 @@
   const modalYear = document.getElementById('modalYear');
   const modalTitle = document.getElementById('modalTitle');
   const modalDesc = document.getElementById('modalDesc');
-  const modalSolution = document.getElementById('modalSolution');
+  const pmThumbs = document.getElementById('pmThumbs');
+  const pmCounter = document.getElementById('pmCounter');
+  const pmPrev = document.getElementById('pmPrev');
+  const pmNext = document.getElementById('pmNext');
+
+  let galleryImages = [];
+  let galleryIndex = 0;
+
+  function showGalleryImage(i) {
+    if (!galleryImages.length) return;
+    galleryIndex = (i + galleryImages.length) % galleryImages.length;
+    modalImg.src = galleryImages[galleryIndex];
+    pmCounter.textContent = `${galleryIndex + 1} / ${galleryImages.length}`;
+    pmThumbs.querySelectorAll('button').forEach((b, n) => {
+      b.classList.toggle('is-active', n === galleryIndex);
+    });
+    const active = pmThumbs.children[galleryIndex];
+    if (active) active.scrollIntoView({ block: 'nearest', inline: 'center', behavior: 'smooth' });
+  }
+
+  pmPrev.addEventListener('click', () => showGalleryImage(galleryIndex - 1));
+  pmNext.addEventListener('click', () => showGalleryImage(galleryIndex + 1));
 
   document.querySelectorAll('[data-open-project]').forEach(btn => {
     btn.addEventListener('click', () => {
       const p = PROJECTS[btn.getAttribute('data-open-project')];
       if (!p) return;
-      modalImg.src = p.img;
-      modalImg.alt = p.title;
-      modalYear.textContent = p.year;
+
+      modalYear.textContent = 'שנת ביצוע ' + p.year;
       modalTitle.textContent = p.title;
-      modalDesc.textContent = p.desc;
-      modalSolution.textContent = p.solution;
+      modalImg.alt = p.title;
+
+      // גוף הטקסט + רשימת שלבים אם קיימת
+      let html = p.body.map(t => `<p>${t}</p>`).join('');
+      if (p.list && p.list.length) {
+        html += `<h4>${p.listTitle || 'שלבי הפרויקט'}</h4>`;
+        html += '<ul class="pm-list">' + p.list.map(t => `<li>${t}</li>`).join('') + '</ul>';
+      }
+      modalDesc.innerHTML = html;
+
+      // גלריית התמונות של הפרויקט
+      galleryImages = p.images || [];
+      pmThumbs.innerHTML = galleryImages
+        .map((src, i) => `<button type="button" aria-label="תמונה ${i + 1}"><img src="${src}" alt="" loading="lazy"></button>`)
+        .join('');
+      pmThumbs.querySelectorAll('button').forEach((b, i) => {
+        b.addEventListener('click', () => showGalleryImage(i));
+      });
+
+      const multi = galleryImages.length > 1;
+      pmThumbs.style.display = multi ? '' : 'none';
+      pmPrev.style.display = pmNext.style.display = multi ? '' : 'none';
+      pmCounter.style.display = multi ? '' : 'none';
+
+      showGalleryImage(0);
       projectModal.classList.add('is-open');
       document.body.style.overflow = 'hidden';
     });
@@ -223,6 +344,11 @@
 
   /* ---------- Escape key closes overlays ---------- */
   document.addEventListener('keydown', (e) => {
+    // חיצים לניווט בגלריית הפרויקט (RTL: ימין = הקודם)
+    if (projectModal.classList.contains('is-open') && galleryImages.length > 1) {
+      if (e.key === 'ArrowLeft') { e.preventDefault(); showGalleryImage(galleryIndex + 1); return; }
+      if (e.key === 'ArrowRight') { e.preventDefault(); showGalleryImage(galleryIndex - 1); return; }
+    }
     if (e.key === 'Escape') {
       closeLightbox();
       closeProjectModal();

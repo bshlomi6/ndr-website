@@ -95,6 +95,23 @@ class Handler(SimpleHTTPRequestHandler):
 
         return super().do_GET()
 
+    def end_headers(self):
+        # בפיתוח אף פעם לא רוצים קאש — אחרת עריכות CSS/JS לא נראות
+        if "Cache-Control" not in self._headers_buffer_names():
+            self.send_header("Cache-Control", "no-store, must-revalidate")
+        super().end_headers()
+
+    def _headers_buffer_names(self):
+        out = []
+        for raw in getattr(self, "_headers_buffer", []):
+            try:
+                line = raw.decode("latin-1")
+            except Exception:
+                continue
+            if ":" in line:
+                out.append(line.split(":", 1)[0].strip())
+        return out
+
     def serve_editor_asset(self, path):
         name = posixpath.basename(path)
         if not SAFE_NAME.match(name):
