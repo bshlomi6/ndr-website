@@ -196,6 +196,41 @@ html.ned-editing .preloader { display: none !important; }
 }
 #nedBanner.is-on { transform: translateY(0); }
 
+/* ---------- כפתור מחיקה צף ---------- */
+#nedKill {
+  position: fixed;
+  z-index: 2147483000;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  border: 2px solid #fff;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #e0364f;
+  color: #fff;
+  box-shadow: 0 6px 18px rgba(224, 54, 79, .5);
+  opacity: 0;
+  visibility: hidden;
+  transform: scale(.6);
+  transition: opacity .18s, transform .18s cubic-bezier(.16, .84, .36, 1), visibility .18s;
+}
+#nedKill.is-on { opacity: 1; visibility: visible; transform: scale(1); }
+#nedKill:hover { background: #b81f36; transform: scale(1.12); }
+#nedKill svg { width: 17px; height: 17px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+
+html.ned-editing .ned-kill-hover {
+  outline: 2px dashed rgba(224, 54, 79, .9) !important;
+  outline-offset: 4px;
+  background: rgba(224, 54, 79, .06) !important;
+}
+/* במצב מחיקה מתקדמת — סימון שונה למיכלים גדולים */
+html.ned-deep .ned-kill-hover {
+  outline-style: solid !important;
+  outline-color: rgba(224, 54, 79, .75) !important;
+}
+
 /* ---------- דיאלוג תמונה ---------- */
 #nedDialog {
   position: fixed; inset: 0; z-index: 2147483002;

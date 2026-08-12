@@ -14,10 +14,28 @@
   // תגיות שמותר שיופיעו בתוך אלמנט וייחשב עדיין "ניתן לעריכה כיחידה"
   const INLINE = new Set(['SPAN', 'STRONG', 'EM', 'B', 'I', 'U', 'SMALL', 'BR', 'SUP', 'SUB', 'MARK']);
 
+  // בלוקים שמותר למחוק בלחיצה אחת
+  const REMOVABLE = [
+    '.service-card', '.value-card', '.team-card', '.project-card',
+    '.related-card', '.gallery-item', '.stat', '.about-points li',
+    '.service-feature-box li', '.footer-col li', '.contact-info-card',
+    '.marquee-track span', '.cities-cloud span', '.main-menu > ul > li',
+    '.side-nav li', '.mobile-menu > ul > li', '.nav-dropdown-panel > a',
+    '.hero-actions .btn', '.service-stat'
+  ].join(',');
+
+  // מיכלים גדולים — נמחקים רק במצב "מחיקה מתקדמת"
+  const REMOVABLE_DEEP = 'section, .section-head, .services-grid, .team-grid, .projects-grid, ' +
+    '.gallery-grid, .values-grid, .related-grid, .footer-col, .service-cta-banner, ' +
+    '.map-grid, .contact-grid, .hero-stats, .marquee, .about-media, .service-feature-box';
+
   let editing = false;
+  let deepMode = false;
   let dirty = 0;
   let activeEl = null;
   let dialogTarget = null;
+  let killTarget = null;
+  const undoStack = [];
 
   const PAGE_LABELS = {
     'index.html': 'עמוד הבית',
@@ -34,6 +52,7 @@
   const I_SAVE = icon('<path d="M5 4h11l3 3v13H5z"/><path d="M9 4v5h6V4M8 20v-6h8v6"/>');
   const I_UNDO = icon('<path d="M4 10h10a5 5 0 0 1 0 10H9"/><path d="M8 6l-4 4 4 4"/>');
   const I_IMG = icon('<rect x="3.5" y="4.5" width="17" height="15" rx="2"/><circle cx="8.5" cy="9.5" r="1.6"/><path d="M4 17.5 9.5 12l3.5 3.5 3-3 4 5"/>');
+  const I_TRASH = icon('<path d="M4 7h16"/><path d="M9 7V5h6v2"/><path d="M6 7l1 13h10l1-13"/><path d="M10 11v6M14 11v6"/>');
 
   /* ---------------- UI ---------------- */
 
@@ -70,9 +89,21 @@
       </div>
 
       <div class="ned-sec">
+        <h3>מחיקת אלמנטים</h3>
+        <div class="ned-switch" data-ned-deep>
+          <div>
+            <strong>מחיקה מתקדמת</strong>
+            <span>מאפשר למחוק גם מדורים שלמים</span>
+          </div>
+          <div class="ned-track"></div>
+        </div>
+        <button class="ned-btn ned-btn-ghost" data-ned-undo disabled>${I_UNDO}<span>שחזור המחיקה האחרונה</span></button>
+      </div>
+
+      <div class="ned-sec">
         <h3>שינויים <span class="ned-count" data-ned-count style="display:none">0</span></h3>
         <button class="ned-btn ned-btn-primary" data-ned-save disabled>${I_SAVE}<span>שמירה לקובץ</span></button>
-        <button class="ned-btn ned-btn-ghost" data-ned-revert disabled>${I_UNDO}<span>ביטול השינויים</span></button>
+        <button class="ned-btn ned-btn-ghost" data-ned-revert disabled>${I_UNDO}<span>ביטול כל השינויים</span></button>
         <p class="ned-status" data-ned-status></p>
       </div>
 
@@ -87,6 +118,8 @@
           <b>טקסט:</b> לחיצה על כל כותרת או פסקה פותחת עריכה במקום.<br>
           <b>תמונה:</b> לחיצה על תמונה פותחת החלפה — קישור או קובץ מהמחשב.<br>
           <b>קישור:</b> <kbd>Alt</kbd> + לחיצה על כפתור או קישור לעריכת היעד.<br>
+          <b>מחיקה:</b> ריחוף מעל כרטיס או פריט → כפתור אדום בפינה.<br>
+          <b>שחזור מחיקה:</b> <kbd>⌘Z</kbd><br>
           <b>שמירה:</b> <kbd>⌘S</kbd> — נשמר ישירות לקובץ, עם גיבוי אוטומטי.<br>
           <b>יציאה:</b> <kbd>Esc</kbd>
         </div>
@@ -121,7 +154,12 @@
       </div>
     </div>`;
 
-  document.body.append(toggle, banner, panel, dialog);
+  const kill = document.createElement('button');
+  kill.id = 'nedKill';
+  kill.title = 'מחיקת האלמנט';
+  kill.innerHTML = I_TRASH;
+
+  document.body.append(toggle, banner, panel, dialog, kill);
 
   const $ = (sel, root = panel) => root.querySelector(sel);
   const statusEl = $('[data-ned-status]');
@@ -129,6 +167,8 @@
   const saveBtn = $('[data-ned-save]');
   const revertBtn = $('[data-ned-revert]');
   const switchEl = $('[data-ned-switch]');
+  const deepEl = $('[data-ned-deep]');
+  const undoBtn = $('[data-ned-undo]');
 
   /* ---------------- עזרי מצב ---------------- */
 
@@ -171,10 +211,13 @@
   }
 
   function endEdit() {
-    if (activeEl) {
-      activeEl.blur();
-      activeEl.removeAttribute('contenteditable');
-      activeEl = null;
+    // blur() מריץ את מטפל ה-blur באופן סינכרוני, והוא כבר מאפס את activeEl —
+    // לכן שומרים הפניה מקומית לפני, אחרת נקבל TypeError שמפיל את השמירה.
+    const el = activeEl;
+    activeEl = null;
+    if (el) {
+      el.blur();
+      el.removeAttribute('contenteditable');
     }
   }
 
@@ -185,9 +228,84 @@
     toggle.classList.toggle('is-active', on);
     switchEl.classList.toggle('is-on', on);
     toggle.innerHTML = on ? I_X : I_PEN;
-    if (!on) endEdit();
+    if (!on) { endEdit(); hideKill(); }
     document.querySelectorAll('[data-ned-editable]').forEach(el => el.removeAttribute('data-ned-editable'));
   }
+
+  /* ---------------- מחיקת אלמנטים ---------------- */
+
+  function removableFor(el) {
+    if (!el || el.nodeType !== 1) return null;
+    if (el.closest('#nedPanel, #nedToggle, #nedDialog, #nedBanner, #nedKill')) return null;
+    let hit = el.closest(REMOVABLE);
+    if (!hit && deepMode) hit = el.closest(REMOVABLE_DEEP);
+    if (!hit || hit === document.body || hit === document.documentElement) return null;
+    return hit;
+  }
+
+  function showKill(el) {
+    killTarget = el;
+    const r = el.getBoundingClientRect();
+    if (r.width === 0 || r.height === 0) return hideKill();
+    kill.style.top = Math.max(6, r.top + 6) + 'px';
+    kill.style.left = Math.max(6, r.left + 6) + 'px';
+    kill.classList.add('is-on');
+    el.classList.add('ned-kill-hover');
+  }
+
+  function hideKill() {
+    if (killTarget) killTarget.classList.remove('ned-kill-hover');
+    killTarget = null;
+    kill.classList.remove('is-on');
+  }
+
+  function removeElement(el) {
+    undoStack.push({ node: el, parent: el.parentNode, next: el.nextSibling });
+    el.remove();
+    undoBtn.disabled = false;
+    markDirty(null);
+    setStatus('נמחק — ⌘Z לשחזור', 'ok');
+  }
+
+  function undoRemove() {
+    const last = undoStack.pop();
+    if (!last) return;
+    if (last.next && last.next.parentNode === last.parent) {
+      last.parent.insertBefore(last.node, last.next);
+    } else {
+      last.parent.appendChild(last.node);
+    }
+    undoBtn.disabled = undoStack.length === 0;
+    dirty = Math.max(0, dirty - 1);
+    countEl.textContent = dirty;
+    countEl.style.display = dirty ? '' : 'none';
+    setStatus('המחיקה שוחזרה', 'ok');
+  }
+
+  kill.addEventListener('click', (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (killTarget) {
+      const el = killTarget;
+      hideKill();
+      removeElement(el);
+    }
+  });
+
+  document.addEventListener('scroll', () => {
+    if (killTarget) showKill(killTarget);
+  }, true);
+
+  window.addEventListener('resize', () => { if (killTarget) showKill(killTarget); });
+
+  deepEl.addEventListener('click', () => {
+    deepMode = !deepMode;
+    deepEl.classList.toggle('is-on', deepMode);
+    document.documentElement.classList.toggle('ned-deep', deepMode);
+    hideKill();
+  });
+
+  undoBtn.addEventListener('click', undoRemove);
 
   /* ---------------- אינטראקציה בעמוד ---------------- */
 
@@ -196,6 +314,11 @@
     if (!editing) return;
     const el = e.target;
     if (isEditableTarget(el)) el.setAttribute('data-ned-editable', '');
+
+    if (el.closest('#nedKill')) return;      // אל תסתיר בזמן מעבר לכפתור עצמו
+    const target = removableFor(el);
+    if (target) { if (target !== killTarget) { hideKill(); showKill(target); } }
+    else hideKill();
   }, true);
 
   document.addEventListener('mouseout', (e) => {
@@ -205,7 +328,7 @@
 
   document.addEventListener('click', (e) => {
     if (!editing) return;
-    if (e.target.closest('#nedPanel, #nedToggle, #nedDialog, #nedBanner')) return;
+    if (e.target.closest('#nedPanel, #nedToggle, #nedDialog, #nedBanner, #nedKill')) return;
 
     const link = e.target.closest('a');
 
@@ -311,14 +434,16 @@
     const clone = document.documentElement.cloneNode(true);
 
     // מצב העריכה עצמו לא נשמר לקובץ
-    clone.classList.remove('ned-editing');
+    clone.classList.remove('ned-editing', 'ned-deep');
     if (!clone.getAttribute('class')) clone.removeAttribute('class');
 
     // הסרת כל מה ששייך לעורך עצמו
     clone.querySelectorAll(
-      '#nedToggle, #nedPanel, #nedBanner, #nedDialog,' +
+      '#nedToggle, #nedPanel, #nedBanner, #nedDialog, #nedKill,' +
       'link[href*="__editor"], script[src*="__editor"], meta[name="x-editor-file"]'
     ).forEach(n => n.remove());
+
+    clone.querySelectorAll('.ned-kill-hover').forEach(n => n.classList.remove('ned-kill-hover'));
 
     clone.querySelectorAll('[contenteditable]').forEach(n => n.removeAttribute('contenteditable'));
     clone.querySelectorAll('.ned-dirty').forEach(n => n.classList.remove('ned-dirty'));
@@ -444,6 +569,12 @@
     if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 's') {
       e.preventDefault();
       save();
+      return;
+    }
+    // ⌘Z לשחזור מחיקה — רק כשלא עורכים טקסט (שם זו פעולת ביטול רגילה)
+    if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'z' && !activeEl && undoStack.length) {
+      e.preventDefault();
+      undoRemove();
       return;
     }
     if (e.key === 'Escape') {
