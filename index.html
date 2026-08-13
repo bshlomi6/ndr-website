@@ -8,7 +8,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
 <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;600;700;800;900&amp;display=swap" rel="stylesheet">
-<link rel="stylesheet" href="assets/css/style.css?v=20260812b">
+<link rel="stylesheet" href="assets/css/style.css?v=20260813b">
 </head>
 <body>
 
@@ -138,6 +138,10 @@
   <section class="hero" id="home">
     <div class="hero-media">
       <img src="assets/images/hero.jpg?v=20260813" alt="עבודות תשתית של נ.ד.ר עבודות צנרת" id="heroImg">
+      <!-- הווידאו נטען ע"י main.js רק אחרי שהעמוד מוכן, ורק במסכים גדולים -->
+      <video id="heroVideo" muted loop playsinline preload="none"
+             poster="assets/images/hero.jpg?v=20260813"
+             data-src="assets/video/hero.mp4?v=20260813" aria-hidden="true"></video>
       <div class="hero-overlay"></div>
       <div class="hero-mesh"></div>
     </div>
@@ -659,7 +663,7 @@
   <svg><use href="#i-whatsapp"></use></svg>
 </a>
 
-<script src="assets/js/main.js?v=20260812b"></script>
+<script src="assets/js/main.js?v=20260813b"></script>
 
 
 

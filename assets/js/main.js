@@ -30,6 +30,7 @@
   const backToTop = document.getElementById('backToTop');
   const hero = document.getElementById('home');
   const heroImg = document.getElementById('heroImg');
+  const heroVideo = document.getElementById('heroVideo');
 
   function onScroll() {
     const y = window.scrollY;
@@ -40,18 +41,53 @@
     const total = doc.scrollHeight - doc.clientHeight;
     scrollProgress.style.width = total > 0 ? `${(y / total) * 100}%` : '0%';
 
-    // hero parallax
-    if (heroImg) {
-      const heroH = hero.offsetHeight;
-      if (y < heroH) {
-        heroImg.style.transform = `scale(1.08) translateY(${y * 0.18}px)`;
-      }
+    // hero parallax — התמונה והווידאו זזים יחד
+    const heroH = hero.offsetHeight;
+    if (y < heroH) {
+      const t = `scale(1.08) translateY(${y * 0.18}px)`;
+      if (heroImg) heroImg.style.transform = t;
+      if (heroVideo) heroVideo.style.transform = t;
     }
   }
   window.addEventListener('scroll', onScroll, { passive: true });
   onScroll();
 
   backToTop.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
+
+  /* ---------- Hero background video ----------
+     ~5MB, ולכן נטען רק אחרי שהעמוד מוכן ורק כשזה באמת מתאים.
+     בכל מקרה אחר התמונה נשארת — היא ה-fallback המלא. */
+  (function initHeroVideo() {
+    if (!heroVideo) return;
+
+    const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const bigScreen = window.matchMedia('(min-width: 900px)').matches;
+    const conn = navigator.connection || {};
+    const cheapData = conn.saveData === true || /(^|-)2g$/.test(conn.effectiveType || '');
+
+    if (reduceMotion || !bigScreen || cheapData) return;
+
+    const start = () => {
+      heroVideo.src = heroVideo.dataset.src;
+      heroVideo.load();
+      // מציגים רק כשיש מספיק בופר לניגון רציף, אחרת רואים תקיעות
+      heroVideo.addEventListener('canplaythrough', () => {
+        heroVideo.play()
+          .then(() => heroVideo.classList.add('is-playing'))
+          .catch(() => {});           // חסימת autoplay — נשארים עם התמונה
+      }, { once: true });
+      heroVideo.addEventListener('error', () => heroVideo.remove(), { once: true });
+    };
+
+    if (document.readyState === 'complete') start();
+    else window.addEventListener('load', start, { once: true });
+
+    // חוסך סוללה ורוחב פס כשהגולש לא רואה את ההירו
+    document.addEventListener('visibilitychange', () => {
+      if (!heroVideo.src) return;
+      document.hidden ? heroVideo.pause() : heroVideo.play().catch(() => {});
+    });
+  })();
 
   /* ---------- Mobile menu ---------- */
   const hamburger = document.getElementById('hamburger');

@@ -330,6 +330,20 @@ svg{ width:1em; height:1em; fill:none; stroke:currentColor; stroke-width:1.8; st
 }
 .hero-media{ position:absolute; inset:0; z-index:0; }
 .hero-media img{ width:100%; height:100%; object-fit:cover; transform: scale(1.08); will-change: transform; }
+
+/* וידאו רקע — יושב מעל התמונה ומופיע רק כשהוא באמת מוכן לנגן,
+   כך שהתמונה משמשת כ-fallback מלא ואין הבהוב או מסך שחור */
+.hero-media video{
+  position:absolute; inset:0;
+  width:100%; height:100%; object-fit:cover;
+  transform: scale(1.08);
+  opacity:0; transition: opacity .9s var(--ease-soft);
+  pointer-events:none;
+}
+.hero-media video.is-playing{ opacity:1; }
+@media (prefers-reduced-motion: reduce){
+  .hero-media video{ display:none; }   /* מכבד העדפת מערכת לצמצום תנועה */
+}
 .hero-overlay{
   position:absolute; inset:0;
   background: linear-gradient(180deg, rgba(2,14,28,.78) 0%, rgba(2,20,40,.55) 45%, rgba(2,14,28,.92) 100%),
