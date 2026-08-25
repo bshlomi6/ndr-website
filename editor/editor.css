@@ -196,6 +196,69 @@ html.ned-editing .preloader { display: none !important; }
 }
 #nedBanner.is-on { transform: translateY(0); }
 
+/* ---------- כפתורי הכותרת ---------- */
+.ned-head-btns { display: flex; gap: 6px; flex-shrink: 0; }
+
+/* ---------- מזעור והחלפת צד ---------- */
+#nedPanel.is-min {
+  transform: translateX(calc(100% - 6px));
+  opacity: .25;
+}
+#nedPanel.is-min:hover { opacity: .6; }
+
+#nedPanel.on-left {
+  right: auto;
+  left: 0;
+  box-shadow: 18px 0 50px rgba(2, 12, 26, .5);
+  transform: translateX(-100%);
+}
+#nedPanel.on-left.is-open { transform: translateX(0); }
+#nedPanel.on-left.is-min { transform: translateX(calc(-100% + 6px)); }
+
+/* ---------- ספריית רכיבים ---------- */
+.ned-comps {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6px;
+}
+.ned-comps button {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  padding: 11px 10px;
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, .12);
+  background: rgba(255, 255, 255, .05);
+  color: rgba(255, 255, 255, .85);
+  font-size: .76rem;
+  font-weight: 600;
+  text-align: right;
+  cursor: pointer;
+  transition: background .22s, border-color .22s, transform .22s;
+}
+.ned-comps button:hover {
+  background: rgba(82, 201, 240, .16);
+  border-color: rgba(82, 201, 240, .5);
+  transform: translateY(-2px);
+}
+.ned-comps button svg {
+  width: 13px; height: 13px; flex-shrink: 0;
+  fill: none; stroke: #8fe0ff; stroke-width: 2.2; stroke-linecap: round;
+}
+.ned-comps button span { line-height: 1.25; }
+
+/* הבהוב על רכיב שזה עתה נוסף, כדי שיהיה ברור מה קרה */
+.ned-just-added {
+  animation: nedFlash 1.8s var(--ned-ease, ease-out);
+  outline: 2px solid #52c9f0 !important;
+  outline-offset: 4px;
+  border-radius: 8px;
+}
+@keyframes nedFlash {
+  0%   { background: rgba(82, 201, 240, .35); }
+  100% { background: transparent; }
+}
+
 /* ---------- כפתור מחיקה צף ---------- */
 #nedKill {
   position: fixed;

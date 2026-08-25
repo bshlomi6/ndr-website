@@ -53,6 +53,91 @@
   const I_UNDO = icon('<path d="M4 10h10a5 5 0 0 1 0 10H9"/><path d="M8 6l-4 4 4 4"/>');
   const I_IMG = icon('<rect x="3.5" y="4.5" width="17" height="15" rx="2"/><circle cx="8.5" cy="9.5" r="1.6"/><path d="M4 17.5 9.5 12l3.5 3.5 3-3 4 5"/>');
   const I_TRASH = icon('<path d="M4 7h16"/><path d="M9 7V5h6v2"/><path d="M6 7l1 13h10l1-13"/><path d="M10 11v6M14 11v6"/>');
+  const I_PLUS = icon('<path d="M12 5v14M5 12h14"/>');
+
+  /* ---------------- ספריית רכיבים ----------------
+     כל רכיב יודע לאיזה מיכל הוא שייך, כך שהוספה היא לחיצה אחת.
+     המחלקה is-visible מתווספת מיד כדי שהרכיב לא ייוולד שקוף. */
+  const COMPONENTS = [
+    {
+      name: 'כרטיס שירות', icon: I_PEN, target: '.services-grid',
+      html: `<article class="service-card reveal is-visible">
+        <div class="service-icon"><svg><use href="#i-tool"></use></svg></div>
+        <h3>שם השירות</h3>
+        <p>תיאור קצר של השירות — לחצו כאן כדי לערוך את הטקסט.</p>
+        <a href="#contact" class="card-link"><span>קראו עוד</span><svg><use href="#i-arrow"></use></svg></a>
+      </article>`
+    },
+    {
+      name: 'איש צוות', icon: I_PEN, target: '.team-grid',
+      html: `<div class="team-card reveal is-visible">
+        <div class="team-photo"><img src="assets/images/team-1.jpg" alt="חבר צוות"></div>
+        <h3>שם מלא</h3>
+        <p>תפקיד בחברה</p>
+      </div>`
+    },
+    {
+      name: 'תמונה בגלריה', icon: I_IMG, target: '.gallery-grid',
+      html: `<button class="gallery-item reveal is-visible" data-gallery-img="assets/images/gallery-1.jpg" data-caption="כיתוב לתמונה">
+        <img src="assets/images/gallery-1.jpg" alt="תמונה מהשטח" loading="lazy">
+        <span class="gallery-zoom"><svg><use href="#i-image"></use></svg></span>
+      </button>`
+    },
+    {
+      name: 'לקוח בסרגל', icon: I_PEN, target: '.marquee-track',
+      html: `<span>שם הלקוח</span>`
+    },
+    {
+      name: 'כרטיס ערך', icon: I_PEN, target: '.values-grid',
+      html: `<div class="value-card reveal is-visible">
+        <div class="value-icon"><svg><use href="#i-award"></use></svg></div>
+        <h3>שם הערך</h3>
+        <p>תיאור קצר של הערך — לחצו לעריכה.</p>
+      </div>`
+    },
+    {
+      name: 'נתון בהירו', icon: I_PEN, target: '.hero-stats',
+      html: `<div class="stat">
+        <span class="stat-num">100</span><span class="stat-plus">+</span>
+        <p>תיאור הנתון</p>
+      </div>`
+    },
+    {
+      name: 'פריט יתרון', icon: I_PEN, target: '.about-points',
+      html: `<li><svg><use href="#i-check"></use></svg> יתרון חדש — לחצו לעריכה</li>`
+    },
+    {
+      name: 'כרטיס יצירת קשר', icon: I_PEN, target: '.contact-info',
+      html: `<div class="contact-info-card">
+        <div class="contact-info-icon"><svg><use href="#i-phone"></use></svg></div>
+        <div><span>כותרת</span><strong>הפרט עצמו</strong></div>
+      </div>`
+    },
+    {
+      name: 'מדור טקסט חדש', icon: I_PLUS, target: 'main', atEnd: true,
+      html: `<section class="about" style="padding:110px 0">
+        <div class="container">
+          <p class="section-eyebrow reveal is-visible">כותרת עליונה</p>
+          <h2 class="section-title reveal is-visible">כותרת המדור</h2>
+          <p class="about-text reveal is-visible" style="max-width:760px">
+            תוכן המדור — לחצו על כל שורה כדי לערוך אותה. אפשר להוסיף כאן כל טקסט שתרצו.
+          </p>
+        </div>
+      </section>`
+    },
+    {
+      name: 'באנר קריאה לפעולה', icon: I_PLUS, target: 'main', atEnd: true,
+      html: `<section style="padding:0 0 90px"><div class="container">
+        <div class="service-cta-banner reveal is-visible">
+          <div class="service-cta-text">
+            <h3>מעוניינים בהצעת מחיר?</h3>
+            <p>צרו איתנו קשר ונשמח לעמוד לשירותכם.</p>
+          </div>
+          <a href="#contact" class="btn btn-ghost btn-lg"><span>דברו איתנו</span><svg><use href="#i-arrow"></use></svg></a>
+        </div>
+      </div></section>`
+    }
+  ];
 
   /* ---------------- UI ---------------- */
 
@@ -73,7 +158,11 @@
         <h2>עורך האתר</h2>
         <p>${FILE}</p>
       </div>
-      <button class="ned-x" data-ned-close title="סגירה">${I_X}</button>
+      <div class="ned-head-btns">
+        <button class="ned-x" data-ned-side title="העברה לצד השני">${icon('<path d="M8 5l-5 7 5 7M16 5l5 7-5 7"/>')}</button>
+        <button class="ned-x" data-ned-min title="מזעור — לראות את האתר במלואו">${icon('<path d="M5 12h14"/>')}</button>
+        <button class="ned-x" data-ned-close title="סגירה">${I_X}</button>
+      </div>
     </div>
 
     <div class="ned-body">
@@ -98,6 +187,14 @@
           <div class="ned-track"></div>
         </div>
         <button class="ned-btn ned-btn-ghost" data-ned-undo disabled>${I_UNDO}<span>שחזור המחיקה האחרונה</span></button>
+      </div>
+
+      <div class="ned-sec">
+        <h3>הוספת רכיבים</h3>
+        <div class="ned-comps" data-ned-comps></div>
+        <p class="ned-hint" style="margin-top:10px;padding:10px 12px;font-size:.72rem">
+          הרכיב נוסף בסוף המדור המתאים, ואפשר מיד לערוך אותו או למחוק.
+        </p>
       </div>
 
       <div class="ned-sec">
@@ -260,26 +357,34 @@
   }
 
   function removeElement(el) {
-    undoStack.push({ node: el, parent: el.parentNode, next: el.nextSibling });
+    undoStack.push({ type: 'remove', node: el, parent: el.parentNode, next: el.nextSibling });
     el.remove();
     undoBtn.disabled = false;
     markDirty(null);
     setStatus('נמחק — ⌘Z לשחזור', 'ok');
   }
 
-  function undoRemove() {
+  // מבטל את הפעולה האחרונה — מחיקה או הוספה
+  function undoLast() {
     const last = undoStack.pop();
     if (!last) return;
-    if (last.next && last.next.parentNode === last.parent) {
-      last.parent.insertBefore(last.node, last.next);
+
+    if (last.type === 'insert') {
+      last.node.remove();
+      setStatus('הרכיב הוסר', 'ok');
     } else {
-      last.parent.appendChild(last.node);
+      if (last.next && last.next.parentNode === last.parent) {
+        last.parent.insertBefore(last.node, last.next);
+      } else {
+        last.parent.appendChild(last.node);
+      }
+      setStatus('המחיקה שוחזרה', 'ok');
     }
+
     undoBtn.disabled = undoStack.length === 0;
     dirty = Math.max(0, dirty - 1);
     countEl.textContent = dirty;
     countEl.style.display = dirty ? '' : 'none';
-    setStatus('המחיקה שוחזרה', 'ok');
   }
 
   kill.addEventListener('click', (e) => {
@@ -305,7 +410,54 @@
     hideKill();
   });
 
-  undoBtn.addEventListener('click', undoRemove);
+  undoBtn.addEventListener('click', undoLast);
+
+  /* ---------------- הוספת רכיבים ---------------- */
+
+  function insertComponent(def) {
+    const host = document.querySelector(def.target);
+    if (!host) {
+      setStatus(`לא נמצא מדור מתאים ל"${def.name}" בעמוד הזה`, 'err');
+      return;
+    }
+
+    const tpl = document.createElement('template');
+    tpl.innerHTML = def.html.trim();
+    const node = tpl.content.firstElementChild;
+
+    host.appendChild(node);
+    undoStack.push({ type: 'insert', node });
+    undoBtn.disabled = false;
+    markDirty(null);
+
+    // מביא את הרכיב החדש לתצוגה ומהבהב עליו כדי שיהיה ברור מה נוסף
+    node.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    node.classList.add('ned-just-added');
+    setTimeout(() => node.classList.remove('ned-just-added'), 1800);
+
+    setStatus(`"${def.name}" נוסף — לחצו עליו כדי לערוך`, 'ok');
+    if (!editing) setEditing(true);
+  }
+
+  const compsBox = $('[data-ned-comps]');
+  compsBox.innerHTML = COMPONENTS
+    .map((c, i) => `<button type="button" data-comp="${i}">${I_PLUS}<span>${c.name}</span></button>`)
+    .join('');
+  compsBox.querySelectorAll('button').forEach(b => {
+    b.addEventListener('click', () => insertComponent(COMPONENTS[+b.dataset.comp]));
+  });
+
+  /* ---------------- מזעור והחלפת צד ----------------
+     נועד למקרה שהפאנל מסתיר בדיוק את מה שרוצים לערוך. */
+  $('[data-ned-min]').addEventListener('click', () => {
+    panel.classList.add('is-min');
+    setStatus('הפאנל ממוזער — לחצו על העיפרון כדי להחזיר');
+  });
+
+  $('[data-ned-side]').addEventListener('click', () => {
+    panel.classList.toggle('on-left');
+    kill.classList.toggle('shift-left', panel.classList.contains('on-left'));
+  });
 
   /* ---------------- אינטראקציה בעמוד ---------------- */
 
@@ -443,7 +595,7 @@
       'link[href*="__editor"], script[src*="__editor"], meta[name="x-editor-file"]'
     ).forEach(n => n.remove());
 
-    clone.querySelectorAll('.ned-kill-hover').forEach(n => n.classList.remove('ned-kill-hover'));
+    clone.querySelectorAll('.ned-kill-hover, .ned-just-added').forEach(n => n.classList.remove('ned-kill-hover','ned-just-added'));
 
     clone.querySelectorAll('[contenteditable]').forEach(n => n.removeAttribute('contenteditable'));
     clone.querySelectorAll('.ned-dirty').forEach(n => n.classList.remove('ned-dirty'));
@@ -535,6 +687,12 @@
   function closePanel() { panel.classList.remove('is-open'); }
 
   toggle.addEventListener('click', () => {
+    // ממוזער → החזרה; סגור → פתיחה; פתוח → הפעלה/כיבוי של מצב עריכה
+    if (panel.classList.contains('is-min')) {
+      panel.classList.remove('is-min');
+      setStatus('');
+      return;
+    }
     if (!panel.classList.contains('is-open')) {
       openPanel();
       if (!editing) setEditing(true);
@@ -543,7 +701,11 @@
     }
   });
 
-  $('[data-ned-close]').addEventListener('click', () => { closePanel(); setEditing(false); });
+  $('[data-ned-close]').addEventListener('click', () => {
+    closePanel();
+    panel.classList.remove('is-min');
+    setEditing(false);
+  });
   switchEl.addEventListener('click', () => setEditing(!editing));
 
   fetch('/__editor-pages')
@@ -574,7 +736,7 @@
     // ⌘Z לשחזור מחיקה — רק כשלא עורכים טקסט (שם זו פעולת ביטול רגילה)
     if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'z' && !activeEl && undoStack.length) {
       e.preventDefault();
-      undoRemove();
+      undoLast();
       return;
     }
     if (e.key === 'Escape') {
