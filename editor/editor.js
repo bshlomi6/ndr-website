@@ -11,8 +11,10 @@
   const FILE = (document.querySelector('meta[name="x-editor-file"]') || {}).content
     || (location.pathname.replace(/^\//, '') || 'index.html');
 
-  // תגיות שמותר שיופיעו בתוך אלמנט וייחשב עדיין "ניתן לעריכה כיחידה"
-  const INLINE = new Set(['SPAN', 'STRONG', 'EM', 'B', 'I', 'U', 'SMALL', 'BR', 'SUP', 'SUB', 'MARK']);
+  // תגיות שמותר שיופיעו בתוך אלמנט וייחשב עדיין "ניתן לעריכה כיחידה".
+  // SVG נכלל כי פריטי רשימה רבים באתר הם "אייקון + טקסט" (למשל
+  // "מה כולל השירות"), ובלעדיו אי אפשר היה לערוך את הטקסט שלהם.
+  const INLINE = new Set(['SPAN', 'STRONG', 'EM', 'B', 'I', 'U', 'SMALL', 'BR', 'SUP', 'SUB', 'MARK', 'SVG']);
 
   // בלוקים שמותר למחוק בלחיצה אחת
   const REMOVABLE = [
@@ -24,7 +26,7 @@
     '.hero-actions .btn', '.service-stat'
   ].join(',');
 
-  // מיכלים גדולים — נמחקים רק במצב "מחיקה מתקדמת"
+  // מיכלים גדולים - נמחקים רק במצב "מחיקה מתקדמת"
   const REMOVABLE_DEEP = 'section, .section-head, .services-grid, .team-grid, .projects-grid, ' +
     '.gallery-grid, .values-grid, .related-grid, .footer-col, .service-cta-banner, ' +
     '.map-grid, .contact-grid, .hero-stats, .marquee, .about-media, .service-feature-box';
@@ -64,7 +66,7 @@
       html: `<article class="service-card reveal is-visible">
         <div class="service-icon"><svg><use href="#i-tool"></use></svg></div>
         <h3>שם השירות</h3>
-        <p>תיאור קצר של השירות — לחצו כאן כדי לערוך את הטקסט.</p>
+        <p>תיאור קצר של השירות - לחצו כאן כדי לערוך את הטקסט.</p>
         <a href="#contact" class="card-link"><span>קראו עוד</span><svg><use href="#i-arrow"></use></svg></a>
       </article>`
     },
@@ -106,7 +108,7 @@
       html: `<div class="value-card reveal is-visible">
         <div class="value-icon"><svg><use href="#i-award"></use></svg></div>
         <h3>שם הערך</h3>
-        <p>תיאור קצר של הערך — לחצו לעריכה.</p>
+        <p>תיאור קצר של הערך - לחצו לעריכה.</p>
       </div>`
     },
     {
@@ -117,8 +119,11 @@
       </div>`
     },
     {
-      name: 'פריט יתרון', icon: I_PEN, target: '.about-points',
-      html: `<li><svg><use href="#i-check"></use></svg> יתרון חדש — לחצו לעריכה</li>`
+      // "מה כולל השירות" בעמודי השירות, ורשימת היתרונות באודות -
+      // אותו סימון בדיוק, ולכן רכיב אחד שמאתר את מה שקיים בעמוד
+      name: 'שורה ב"מה כולל השירות"', icon: I_PEN,
+      target: () => document.querySelector('.service-feature-box ul, .about-points'),
+      html: `<li><svg><use href="#i-check"></use></svg> שורה חדשה - לחצו לעריכה</li>`
     },
     {
       name: 'כרטיס יצירת קשר', icon: I_PEN, target: '.contact-info',
@@ -134,7 +139,7 @@
           <p class="section-eyebrow reveal is-visible">כותרת עליונה</p>
           <h2 class="section-title reveal is-visible">כותרת המדור</h2>
           <p class="about-text reveal is-visible" style="max-width:760px">
-            תוכן המדור — לחצו על כל שורה כדי לערוך אותה. אפשר להוסיף כאן כל טקסט שתרצו.
+            תוכן המדור - לחצו על כל שורה כדי לערוך אותה. אפשר להוסיף כאן כל טקסט שתרצו.
           </p>
         </div>
       </section>`
@@ -162,7 +167,7 @@
 
   const banner = document.createElement('div');
   banner.id = 'nedBanner';
-  banner.textContent = 'מצב עריכה פעיל — לחצו על טקסט כדי לערוך, על תמונה כדי להחליף';
+  banner.textContent = 'מצב עריכה פעיל - לחצו על טקסט כדי לערוך, על תמונה כדי להחליף';
 
   const panel = document.createElement('aside');
   panel.id = 'nedPanel';
@@ -174,7 +179,7 @@
       </div>
       <div class="ned-head-btns">
         <button class="ned-x" data-ned-side title="העברה לצד השני">${icon('<path d="M8 5l-5 7 5 7M16 5l5 7-5 7"/>')}</button>
-        <button class="ned-x" data-ned-min title="מזעור — לראות את האתר במלואו">${icon('<path d="M5 12h14"/>')}</button>
+        <button class="ned-x" data-ned-min title="מזעור - לראות את האתר במלואו">${icon('<path d="M5 12h14"/>')}</button>
         <button class="ned-x" data-ned-close title="סגירה">${I_X}</button>
       </div>
     </div>
@@ -212,7 +217,7 @@
         </button>
         <p class="ned-status" data-ned-svc-status></p>
         <div class="ned-hint" style="padding:10px 12px;font-size:.72rem">
-          מעדכן את הכרטיסים בעמוד הבית, התפריט, תפריט המובייל והפוטר — בכל 6 העמודים בבת אחת.
+          מעדכן את הכרטיסים בעמוד הבית, התפריט, תפריט המובייל והפוטר - בכל 6 העמודים בבת אחת.
         </div>
       </div>
 
@@ -240,11 +245,11 @@
         <h3>איך זה עובד</h3>
         <div class="ned-hint">
           <b>טקסט:</b> לחיצה על כל כותרת או פסקה פותחת עריכה במקום.<br>
-          <b>תמונה:</b> לחיצה על תמונה פותחת החלפה — קישור או קובץ מהמחשב.<br>
+          <b>תמונה:</b> לחיצה על תמונה פותחת החלפה - קישור או קובץ מהמחשב.<br>
           <b>קישור:</b> <kbd>Alt</kbd> + לחיצה על כפתור או קישור לעריכת היעד.<br>
           <b>מחיקה:</b> ריחוף מעל כרטיס או פריט → כפתור אדום בפינה.<br>
           <b>שחזור מחיקה:</b> <kbd>⌘Z</kbd><br>
-          <b>שמירה:</b> <kbd>⌘S</kbd> — נשמר ישירות לקובץ, עם גיבוי אוטומטי.<br>
+          <b>שמירה:</b> <kbd>⌘S</kbd> - נשמר ישירות לקובץ, עם גיבוי אוטומטי.<br>
           <b>יציאה:</b> <kbd>Esc</kbd>
         </div>
       </div>
@@ -252,7 +257,7 @@
 
     <div class="ned-foot">
       <div class="ned-hint" style="padding:12px 14px">
-        העורך רץ רק מקומית ואינו חלק מקבצי האתר — מה שתעלו לאוויר נקי ממנו.
+        העורך רץ רק מקומית ואינו חלק מקבצי האתר - מה שתעלו לאוויר נקי ממנו.
       </div>
     </div>`;
 
@@ -266,7 +271,7 @@
       <label class="ned-label" data-ned-dlabel>כתובת התמונה</label>
       <input class="ned-input" data-ned-dinput type="text" dir="ltr">
       <div data-ned-dfile>
-        <p class="ned-or">— או —</p>
+        <p class="ned-or">- או -</p>
         <label class="ned-file">
           ${I_IMG}<span>העלאת קובץ מהמחשב</span>
           <input type="file" accept="image/*" data-ned-dupload>
@@ -316,8 +321,9 @@
     if (el.closest('#nedPanel, #nedToggle, #nedDialog, #nedBanner')) return false;
     if (['IMG', 'SVG', 'USE', 'INPUT', 'SELECT', 'TEXTAREA', 'IFRAME'].includes(el.tagName)) return false;
     if (!el.textContent.trim()) return false;
-    // מותר רק אם כל צאצאיו הם תגיות טקסט פנימיות
-    return [...el.children].every(c => INLINE.has(c.tagName));
+    // מותר רק אם כל צאצאיו הם תגיות טקסט פנימיות.
+    // toUpperCase כי תגיות SVG מחזירות tagName באותיות קטנות
+    return [...el.children].every(c => INLINE.has(c.tagName.toUpperCase()));
   }
 
   function beginEdit(el) {
@@ -335,7 +341,7 @@
   }
 
   function endEdit() {
-    // blur() מריץ את מטפל ה-blur באופן סינכרוני, והוא כבר מאפס את activeEl —
+    // blur() מריץ את מטפל ה-blur באופן סינכרוני, והוא כבר מאפס את activeEl -
     // לכן שומרים הפניה מקומית לפני, אחרת נקבל TypeError שמפיל את השמירה.
     const el = activeEl;
     activeEl = null;
@@ -388,10 +394,10 @@
     el.remove();
     undoBtn.disabled = false;
     markDirty(null);
-    setStatus('נמחק — ⌘Z לשחזור', 'ok');
+    setStatus('נמחק - ⌘Z לשחזור', 'ok');
   }
 
-  // מבטל את הפעולה האחרונה — מחיקה או הוספה
+  // מבטל את הפעולה האחרונה - מחיקה או הוספה
   function undoLast() {
     const last = undoStack.pop();
     if (!last) return;
@@ -468,7 +474,7 @@
     node.classList.add('ned-just-added');
     setTimeout(() => node.classList.remove('ned-just-added'), 1800);
 
-    setStatus(`"${def.name}" נוסף — לחצו עליו כדי לערוך`, 'ok');
+    setStatus(`"${def.name}" נוסף - לחצו עליו כדי לערוך`, 'ok');
     if (!editing) setEditing(true);
   }
 
@@ -523,7 +529,7 @@
         if (!confirm(`להסיר את "${services[i].name}" מכל העמודים?`)) return;
         services.splice(i, 1);
         renderServices();
-        svcSetStatus('הוסר מהרשימה — לחצו "החלה" כדי לכתוב לקבצים');
+        svcSetStatus('הוסר מהרשימה - לחצו "החלה" כדי לכתוב לקבצים');
       });
     });
   }
@@ -552,7 +558,7 @@
       .then(r => r.json())
       .then(res => {
         if (!res.ok) throw new Error(res.error || 'העדכון נכשל');
-        svcSetStatus(`עודכנו ${res.count} שירותים ב-${res.files.length} עמודים — רעננו לראות`, 'ok');
+        svcSetStatus(`עודכנו ${res.count} שירותים ב-${res.files.length} עמודים - רעננו לראות`, 'ok');
       })
       .catch(err => svcSetStatus(err.message, 'err'))
       .finally(() => { btn.disabled = false; });
@@ -562,7 +568,7 @@
      נועד למקרה שהפאנל מסתיר בדיוק את מה שרוצים לערוך. */
   $('[data-ned-min]').addEventListener('click', () => {
     panel.classList.add('is-min');
-    setStatus('הפאנל ממוזער — לחצו על העיפרון כדי להחזיר');
+    setStatus('הפאנל ממוזער - לחצו על העיפרון כדי להחזיר');
   });
 
   $('[data-ned-side]').addEventListener('click', () => {
@@ -684,7 +690,7 @@
           if (!res.ok) throw new Error(res.error || 'העלאה נכשלה');
           dialog.querySelector('[data-ned-dinput]').value = res.src;
           dialog.querySelector('[data-ned-dpreview]').src = res.src;
-          setStatus('התמונה הועלתה — לחצו אישור', 'ok');
+          setStatus('התמונה הועלתה - לחצו אישור', 'ok');
         })
         .catch(err => setStatus(err.message, 'err'));
     };
@@ -732,7 +738,7 @@
     const prog = clone.querySelector('#scrollProgress');
     if (prog) prog.setAttribute('style', 'width: 0%');
 
-    // וידאו ההירו — מסירים את מה ש-main.js הוסיף בזמן ריצה,
+    // וידאו ההירו - מסירים את מה ש-main.js הוסיף בזמן ריצה,
     // אחרת ה-src נצרב לקובץ והטעינה העצלה מתבטלת לכל הגולשים
     const hv = clone.querySelector('#heroVideo');
     if (hv) {
@@ -857,7 +863,7 @@
       save();
       return;
     }
-    // ⌘Z לשחזור מחיקה — רק כשלא עורכים טקסט (שם זו פעולת ביטול רגילה)
+    // ⌘Z לשחזור מחיקה - רק כשלא עורכים טקסט (שם זו פעולת ביטול רגילה)
     if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'z' && !activeEl && undoStack.length) {
       e.preventDefault();
       undoLast();
@@ -874,5 +880,5 @@
     if (dirty) { e.preventDefault(); e.returnValue = ''; }
   });
 
-  console.log('[עורך האתר] פעיל — קובץ:', FILE);
+  console.log('[עורך האתר] פעיל - קובץ:', FILE);
 })();

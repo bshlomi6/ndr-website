@@ -1,5 +1,5 @@
 /* =========================================================
-   עורך חזותי צף — נטען רק דרך שרת הפיתוח (editor/server.py)
+   עורך חזותי צף - נטען רק דרך שרת הפיתוח (editor/server.py)
    לא נשמר לעולם בתוך קבצי האתר.
 ========================================================= */
 
@@ -179,7 +179,7 @@ html.ned-editing [contenteditable="true"] {
 html.ned-editing .ned-dirty {
   box-shadow: inset 0 0 0 2px rgba(255, 154, 60, .55);
 }
-/* בזמן עריכה — לעצור אנימציות שמסתירות תוכן */
+/* בזמן עריכה - לעצור אנימציות שמסתירות תוכן */
 html.ned-editing [data-reveal] {
   opacity: 1 !important;
   transform: none !important;
@@ -314,7 +314,7 @@ html.ned-editing .ned-kill-hover {
   outline-offset: 4px;
   background: rgba(224, 54, 79, .06) !important;
 }
-/* במצב מחיקה מתקדמת — סימון שונה למיכלים גדולים */
+/* במצב מחיקה מתקדמת - סימון שונה למיכלים גדולים */
 html.ned-deep .ned-kill-hover {
   outline-style: solid !important;
   outline-color: rgba(224, 54, 79, .75) !important;

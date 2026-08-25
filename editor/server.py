@@ -3,7 +3,7 @@
 Dev server for the נ.ד.ר site with a built-in visual editor.
 
 Serves the site normally, but injects the floating editor into every HTML
-response. The editor is never written into the source files — publish the
+response. The editor is never written into the source files - publish the
 site as-is and no editor code goes with it.
 
 Usage:
@@ -27,10 +27,15 @@ EDITOR_DIR = os.path.join(ROOT, "editor")
 BACKUP_DIR = os.path.join(EDITOR_DIR, "backups")
 IMAGES_DIR = os.path.join(ROOT, "assets", "images")
 
-INJECT = (
-    '<link rel="stylesheet" href="/__editor/editor.css">\n'
-    '<script src="/__editor/editor.js" defer></script>\n'
-)
+def _asset_version():
+    """חותמת לפי זמן השינוי של קבצי העורך, כדי שהדפדפן לא יריץ גרסה ישנה."""
+    stamp = 0
+    for name in ("editor.js", "editor.css"):
+        try:
+            stamp = max(stamp, int(os.path.getmtime(os.path.join(EDITOR_DIR, name))))
+        except OSError:
+            pass
+    return stamp
 
 SAFE_NAME = re.compile(r"^[A-Za-z0-9._-]+$")
 
@@ -100,7 +105,7 @@ class Handler(SimpleHTTPRequestHandler):
         return super().do_GET()
 
     def end_headers(self):
-        # בפיתוח אף פעם לא רוצים קאש — אחרת עריכות CSS/JS לא נראות
+        # בפיתוח אף פעם לא רוצים קאש - אחרת עריכות CSS/JS לא נראות
         if "Cache-Control" not in self._headers_buffer_names():
             self.send_header("Cache-Control", "no-store, must-revalidate")
         super().end_headers()
@@ -165,7 +170,12 @@ class Handler(SimpleHTTPRequestHandler):
         with open(local, "r", encoding="utf-8") as fh:
             html = fh.read()
         rel = os.path.relpath(local, ROOT).replace(os.sep, "/")
-        tag = INJECT + '<meta name="x-editor-file" content="%s">\n' % rel
+        v = _asset_version()
+        inject = (
+            '<link rel="stylesheet" href="/__editor/editor.css?v=%d">\n'
+            '<script src="/__editor/editor.js?v=%d" defer></script>\n' % (v, v)
+        )
+        tag = inject + '<meta name="x-editor-file" content="%s">\n' % rel
         if "</body>" in html:
             html = html.replace("</body>", tag + "</body>", 1)
         else:
