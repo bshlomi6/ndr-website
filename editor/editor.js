@@ -69,6 +69,20 @@
       </article>`
     },
     {
+      // הפוטר מכיל כמה עמודות זהות, ולכן מאתרים לפי הכותרת ולא לפי מחלקה
+      name: 'שירות בפוטר', icon: I_PEN,
+      target: () => [...document.querySelectorAll('.footer-col')]
+        .find(c => (c.querySelector('h4') || {}).textContent?.includes('שירותי'))
+        ?.querySelector('ul'),
+      html: `<li><a href="#services">שם השירות</a></li>`
+    },
+    {
+      name: 'שירות בתפריט', icon: I_PEN,
+      target: '.nav-dropdown-panel',
+      before: '.nav-dropdown-all',       // תמיד לפני "כל השירותים בעמוד אחד"
+      html: `<a href="#services"><svg><use href="#i-tool"></use></svg><span>שם השירות</span></a>`
+    },
+    {
       name: 'איש צוות', icon: I_PEN, target: '.team-grid',
       html: `<div class="team-card reveal is-visible">
         <div class="team-photo"><img src="assets/images/team-1.jpg" alt="חבר צוות"></div>
@@ -415,7 +429,11 @@
   /* ---------------- הוספת רכיבים ---------------- */
 
   function insertComponent(def) {
-    const host = document.querySelector(def.target);
+    // target יכול להיות סלקטור או פונקציה, כשצריך איתור לפי תוכן
+    const host = typeof def.target === 'function'
+      ? def.target()
+      : document.querySelector(def.target);
+
     if (!host) {
       setStatus(`לא נמצא מדור מתאים ל"${def.name}" בעמוד הזה`, 'err');
       return;
@@ -425,7 +443,9 @@
     tpl.innerHTML = def.html.trim();
     const node = tpl.content.firstElementChild;
 
-    host.appendChild(node);
+    const anchor = def.before ? host.querySelector(def.before) : null;
+    if (anchor) host.insertBefore(node, anchor);
+    else host.appendChild(node);
     undoStack.push({ type: 'insert', node });
     undoBtn.disabled = false;
     markDirty(null);
