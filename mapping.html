@@ -9,7 +9,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="assets/css/style.css?v=20260813b">
+<link rel="stylesheet" href="assets/css/style.css?v=20260825">
 </head>
 <body>
 
@@ -30,7 +30,7 @@
   <symbol id="i-close" viewBox="0 0 24 24"><path d="M5 5l14 14"/><path d="M19 5 5 19"/></symbol>
   <symbol id="i-check" viewBox="0 0 24 24"><path d="M4 12.5l5.5 5.5L20 7"/></symbol>
   <symbol id="i-network" viewBox="0 0 24 24"><circle cx="12" cy="5" r="2"/><circle cx="5" cy="19" r="2"/><circle cx="19" cy="19" r="2"/><path d="M12 7v5M12 12l-6 5M12 12l6 5"/></symbol>
-  <symbol id="i-dig" viewBox="0 0 24 24"><path d="M3 21l6-6"/><path d="M8.5 15.5 15 9a2.5 2.5 0 0 0 0-3.5 2.5 2.5 0 0 0-3.5 0l-6.5 6.5"/><path d="M14 6l4-2 2 2-2 4"/></symbol>
+  <symbol id="i-dig" viewBox="0 0 24 24"><rect x="2" y="16.2" width="11.5" height="4.6" rx="2.3"></rect><path d="M5 18.5h5.5"></path><rect x="4.3" y="10.2" width="7" height="6" rx="1.3"></rect><path d="M11.3 11.6 15.8 8l2.6 4.2"></path><path d="M18.1 11.4 21.5 12.7 20 16.6 16.3 15.2Z"></path></symbol>
   <symbol id="i-road" viewBox="0 0 24 24"><path d="M8 3 4 21"/><path d="M16 3l4 18"/><path d="M11.3 9h1.4M10.6 14h1.8M9.8 19h2.4"/></symbol>
   <symbol id="i-radar" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><circle cx="12" cy="12" r="4.5"/><path d="M12 12 18 6"/><circle cx="12" cy="12" r="1" fill="currentColor" stroke="none"/></symbol>
   <symbol id="i-shield" viewBox="0 0 24 24"><path d="M12 3.5 19 6.5v5.3c0 4.7-3 7.7-7 9-4-1.3-7-4.3-7-9V6.5L12 3.5Z"/><path d="M9 12l2 2 4-4.5"/></symbol>
@@ -58,11 +58,13 @@
         <li class="nav-dropdown">
           <a href="index.html#services" class="nav-dropdown-trigger">שירותי החברה <svg><use href="#i-chevron"/></svg></a>
           <div class="nav-dropdown-panel">
-            <a href="horizontal-drilling.html"><svg><use href="#i-tool"/></svg><span>קידוחים אופקיים</span></a>
-            <a href="excavation.html"><svg><use href="#i-dig"/></svg><span>חפירות</span></a>
-            <a href="development.html"><svg><use href="#i-road"/></svg><span>פיתוח</span></a>
-            <a href="mapping.html"><svg><use href="#i-radar"/></svg><span>איתור ומיפוי</span></a>
-            <a href="heavy-support.html"><svg><use href="#i-shield"/></svg><span>הקמת תמיכה כבדה</span></a>
+<!-- NED:NAV-SERVICES -->
+            <a href="horizontal-drilling.html"><svg><use href="#i-tool"></use></svg><span>קידוחים אופקיים</span></a>
+            <a href="excavation.html"><svg><use href="#i-dig"></use></svg><span>חפירות</span></a>
+            <a href="development.html"><svg><use href="#i-road"></use></svg><span>פיתוח</span></a>
+            <a href="mapping.html"><svg><use href="#i-radar"></use></svg><span>איתור ומיפוי</span></a>
+            <a href="heavy-support.html"><svg><use href="#i-shield"></use></svg><span>הקמת תמיכה כבדה</span></a>
+<!-- /NED:NAV-SERVICES -->
             <a href="index.html#services" class="nav-dropdown-all">כל השירותים בעמוד אחד</a>
           </div>
         </li>
@@ -93,11 +95,13 @@
     <li class="mobile-menu-group">
       <a href="index.html#services">שירותי החברה</a>
       <ul class="mobile-submenu">
+<!-- NED:MOBILE-SERVICES -->
         <li><a href="horizontal-drilling.html">קידוחים אופקיים</a></li>
         <li><a href="excavation.html">חפירות</a></li>
         <li><a href="development.html">פיתוח</a></li>
         <li><a href="mapping.html">איתור ומיפוי</a></li>
         <li><a href="heavy-support.html">הקמת תמיכה כבדה</a></li>
+      <!-- /NED:MOBILE-SERVICES -->
       </ul>
     </li>
     <li><a href="index.html#team">הנהלה</a></li>
@@ -201,12 +205,14 @@
     <div class="footer-col">
       <h4>שירותי החברה</h4>
       <ul>
+<!-- NED:FOOTER-SERVICES -->
         <li><a href="horizontal-drilling.html">קידוחים אופקיים</a></li>
         <li><a href="excavation.html">חפירות</a></li>
         <li><a href="development.html">פיתוח</a></li>
         <li><a href="mapping.html">איתור ומיפוי</a></li>
         <li><a href="heavy-support.html">הקמת תמיכה כבדה</a></li>
-      </ul>
+      <!-- /NED:FOOTER-SERVICES -->
+</ul>
     </div>
 
     <div class="footer-col">
@@ -244,6 +250,6 @@
   <svg><use href="#i-whatsapp"/></svg>
 </a>
 
-<script src="assets/js/main.js?v=20260813b"></script>
+<script src="assets/js/main.js?v=20260825"></script>
 </body>
 </html>

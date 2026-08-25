@@ -215,6 +215,32 @@ html.ned-editing .preloader { display: none !important; }
 #nedPanel.on-left.is-open { transform: translateX(0); }
 #nedPanel.on-left.is-min { transform: translateX(calc(-100% + 6px)); }
 
+/* ---------- ניהול שירותים ---------- */
+.ned-svc-list { display: grid; gap: 10px; margin-bottom: 10px; }
+.ned-svc {
+  background: rgba(255, 255, 255, .05);
+  border: 1px solid rgba(255, 255, 255, .12);
+  border-radius: 12px;
+  padding: 10px;
+  display: grid;
+  gap: 7px;
+}
+.ned-svc .ned-input { margin: 0; font-size: .8rem; padding: 8px 10px; direction: rtl; text-align: right; }
+.ned-svc textarea.ned-input { resize: vertical; line-height: 1.5; }
+.ned-svc-top { display: flex; gap: 6px; align-items: center; }
+.ned-svc-top .ned-input { flex: 1; font-weight: 700; }
+.ned-svc-row { display: grid; grid-template-columns: 1fr 1.3fr; gap: 6px; }
+.ned-svc-row .ned-input[data-f="href"] { direction: ltr; text-align: left; font-size: .72rem; }
+.ned-svc-del {
+  width: 30px; height: 30px; flex-shrink: 0;
+  border-radius: 8px; border: none; cursor: pointer;
+  background: rgba(224, 54, 79, .18); color: #ff8f8f;
+  display: flex; align-items: center; justify-content: center;
+  transition: background .2s, color .2s;
+}
+.ned-svc-del:hover { background: #e0364f; color: #fff; }
+.ned-svc-del svg { width: 14px; height: 14px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+
 /* ---------- ספריית רכיבים ---------- */
 .ned-comps {
   display: grid;

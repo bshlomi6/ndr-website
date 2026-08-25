@@ -204,6 +204,19 @@
       </div>
 
       <div class="ned-sec">
+        <h3>ניהול שירותים · כל האתר</h3>
+        <div class="ned-svc-list" data-ned-svc></div>
+        <button class="ned-btn ned-btn-ghost" data-ned-svc-add>${I_PLUS}<span>שירות חדש</span></button>
+        <button class="ned-btn ned-btn-primary" data-ned-svc-apply style="margin-top:8px">
+          ${I_SAVE}<span>החלה על כל העמודים</span>
+        </button>
+        <p class="ned-status" data-ned-svc-status></p>
+        <div class="ned-hint" style="padding:10px 12px;font-size:.72rem">
+          מעדכן את הכרטיסים בעמוד הבית, התפריט, תפריט המובייל והפוטר — בכל 6 העמודים בבת אחת.
+        </div>
+      </div>
+
+      <div class="ned-sec">
         <h3>הוספת רכיבים</h3>
         <div class="ned-comps" data-ned-comps></div>
         <p class="ned-hint" style="margin-top:10px;padding:10px 12px;font-size:.72rem">
@@ -467,6 +480,84 @@
     b.addEventListener('click', () => insertComponent(COMPONENTS[+b.dataset.comp]));
   });
 
+  /* ---------------- ניהול שירותים בכל האתר ---------------- */
+
+  const ICON_CHOICES = [
+    ['i-tool', 'כלי עבודה'], ['i-dig', 'חפירה'], ['i-road', 'כביש'],
+    ['i-radar', 'מכ"ם'], ['i-shield', 'מגן'], ['i-network', 'רשת'],
+    ['i-water', 'מים'], ['i-target', 'מטרה'], ['i-award', 'פרס'],
+    ['i-briefcase', 'תיק'], ['i-gem', 'יהלום'], ['i-headset', 'שירות']
+  ];
+
+  const svcBox = $('[data-ned-svc]');
+  const svcStatus = $('[data-ned-svc-status]');
+  let services = [];
+
+  function svcSetStatus(msg, kind) {
+    svcStatus.textContent = msg || '';
+    svcStatus.className = 'ned-status' + (kind ? ' is-' + kind : '');
+  }
+
+  function renderServices() {
+    svcBox.innerHTML = services.map((s, i) => `
+      <div class="ned-svc" data-i="${i}">
+        <div class="ned-svc-top">
+          <input class="ned-input" data-f="name" value="${(s.name || '').replace(/"/g, '&quot;')}" placeholder="שם השירות" dir="rtl">
+          <button class="ned-svc-del" title="הסרת השירות">${I_TRASH}</button>
+        </div>
+        <textarea class="ned-input" data-f="desc" rows="2" placeholder="תיאור קצר" dir="rtl">${s.desc || ''}</textarea>
+        <div class="ned-svc-row">
+          <select class="ned-input" data-f="icon">
+            ${ICON_CHOICES.map(([v, l]) => `<option value="${v}"${v === s.icon ? ' selected' : ''}>${l}</option>`).join('')}
+          </select>
+          <input class="ned-input" data-f="href" value="${(s.href || '').replace(/"/g, '&quot;')}" placeholder="קישור" dir="ltr">
+        </div>
+      </div>`).join('');
+
+    svcBox.querySelectorAll('.ned-svc').forEach(row => {
+      const i = +row.dataset.i;
+      row.querySelectorAll('[data-f]').forEach(inp => {
+        inp.addEventListener('input', () => { services[i][inp.dataset.f] = inp.value; });
+      });
+      row.querySelector('.ned-svc-del').addEventListener('click', () => {
+        if (!confirm(`להסיר את "${services[i].name}" מכל העמודים?`)) return;
+        services.splice(i, 1);
+        renderServices();
+        svcSetStatus('הוסר מהרשימה — לחצו "החלה" כדי לכתוב לקבצים');
+      });
+    });
+  }
+
+  fetch('/__editor/services')
+    .then(r => r.json())
+    .then(d => { services = d.services || []; renderServices(); })
+    .catch(() => svcSetStatus('לא ניתן לקרוא את רשימת השירותים', 'err'));
+
+  $('[data-ned-svc-add]').addEventListener('click', () => {
+    services.push({ name: 'שירות חדש', desc: 'תיאור קצר של השירות.', href: '#services', icon: 'i-tool' });
+    renderServices();
+    svcBox.lastElementChild.scrollIntoView({ block: 'nearest' });
+    svcBox.lastElementChild.querySelector('[data-f="name"]').select();
+  });
+
+  $('[data-ned-svc-apply]').addEventListener('click', (e) => {
+    const btn = e.currentTarget;
+    btn.disabled = true;
+    svcSetStatus('כותב לכל העמודים…');
+    fetch('/__editor/services', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ services })
+    })
+      .then(r => r.json())
+      .then(res => {
+        if (!res.ok) throw new Error(res.error || 'העדכון נכשל');
+        svcSetStatus(`עודכנו ${res.count} שירותים ב-${res.files.length} עמודים — רעננו לראות`, 'ok');
+      })
+      .catch(err => svcSetStatus(err.message, 'err'))
+      .finally(() => { btn.disabled = false; });
+  });
+
   /* ---------------- מזעור והחלפת צד ----------------
      נועד למקרה שהפאנל מסתיר בדיוק את מה שרוצים לערוך. */
   $('[data-ned-min]').addEventListener('click', () => {
@@ -636,6 +727,19 @@
 
     const cities = clone.querySelector('#citiesCloud');
     if (cities) cities.innerHTML = '';
+
+    // סרגל ההתקדמות נשמר תמיד על 0 ולא על מיקום הגלילה הנוכחי
+    const prog = clone.querySelector('#scrollProgress');
+    if (prog) prog.setAttribute('style', 'width: 0%');
+
+    // וידאו ההירו — מסירים את מה ש-main.js הוסיף בזמן ריצה,
+    // אחרת ה-src נצרב לקובץ והטעינה העצלה מתבטלת לכל הגולשים
+    const hv = clone.querySelector('#heroVideo');
+    if (hv) {
+      hv.removeAttribute('src');
+      hv.classList.remove('is-playing');
+      if (!hv.getAttribute('class')) hv.removeAttribute('class');
+    }
 
     clone.querySelectorAll('[data-count]').forEach(n => { n.textContent = '0'; });
 

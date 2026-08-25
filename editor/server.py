@@ -76,6 +76,10 @@ class Handler(SimpleHTTPRequestHandler):
     def do_GET(self):
         path = urllib.parse.urlparse(self.path).path
 
+        # נתיבי API נבדקים לפני הגשת קבצי העורך, אחרת הם נתפסים כשם קובץ
+        if path == "/__editor/services":
+            return self.read_services()
+
         if path.startswith("/__editor/"):
             return self.serve_editor_asset(path)
 
@@ -111,6 +115,33 @@ class Handler(SimpleHTTPRequestHandler):
             if ":" in line:
                 out.append(line.split(":", 1)[0].strip())
         return out
+
+    def read_services(self):
+        """קורא את השירותים הקיימים מגריד עמוד הבית, כמקור אמת יחיד."""
+        index = os.path.join(ROOT, "index.html")
+        if not os.path.isfile(index):
+            return self.send_json({"services": []})
+        with open(index, "r", encoding="utf-8") as fh:
+            html = fh.read()
+
+        m = re.search(r"<!-- NED:SERVICES-GRID -->(.*?)<!-- /NED:SERVICES-GRID -->",
+                      html, re.S)
+        if not m:
+            return self.send_json({"services": []})
+
+        out = []
+        for card in re.findall(r"<article class=\"service-card.*?</article>", m.group(1), re.S):
+            icon = re.search(r'service-icon"><svg><use href="#([^"]+)"', card)
+            name = re.search(r"<h3>(.*?)</h3>", card, re.S)
+            desc = re.search(r"<p>(.*?)</p>", card, re.S)
+            href = re.search(r'<a href="([^"]+)" class="card-link"', card)
+            out.append({
+                "name": (name.group(1).strip() if name else ""),
+                "desc": (desc.group(1).strip() if desc else ""),
+                "href": (href.group(1) if href else "#services"),
+                "icon": (icon.group(1) if icon else "i-tool"),
+            })
+        return self.send_json({"services": out})
 
     def serve_editor_asset(self, path):
         name = posixpath.basename(path)
@@ -156,6 +187,8 @@ class Handler(SimpleHTTPRequestHandler):
                 return self.handle_save()
             if path == "/__editor/upload":
                 return self.handle_upload()
+            if path == "/__editor/services":
+                return self.handle_services()
         except Exception as exc:  # surface the reason in the editor UI
             return self.send_json({"ok": False, "error": str(exc)}, 500)
         self.send_error(404)
@@ -182,6 +215,102 @@ class Handler(SimpleHTTPRequestHandler):
             fh.write(html)
 
         return self.send_json({"ok": True, "file": rel, "backup": stamp})
+
+    # ---------- ניהול שירותים בכל האתר ----------
+
+    def handle_services(self):
+        """כותב מחדש את רשימת השירותים בכל קבצי ה-HTML.
+
+        שירות מופיע בארבעה אזורים (תפריט, תפריט מובייל, פוטר, וגריד
+        בעמוד הבית) בכל אחד מהעמודים. הכתיבה מתבצעת רק בין הערות
+        הסימון NED:*, כך ששאר הקובץ לא נגוע.
+        """
+        data = self.read_json()
+        services = (data or {}).get("services")
+        if not isinstance(services, list) or not services:
+            return self.send_json({"ok": False, "error": "רשימת שירותים ריקה"}, 400)
+
+        clean = []
+        for s in services:
+            name = (s.get("name") or "").strip()
+            if not name:
+                continue
+            clean.append({
+                "name": name,
+                "href": (s.get("href") or "#services").strip(),
+                "icon": (s.get("icon") or "i-tool").strip(),
+                "desc": (s.get("desc") or "").strip(),
+            })
+        if not clean:
+            return self.send_json({"ok": False, "error": "אין שירות תקין"}, 400)
+
+        def esc(t):
+            return (t.replace("&", "&amp;").replace("<", "&lt;")
+                     .replace(">", "&gt;").replace('"', "&quot;"))
+
+        def blocks(is_index):
+            # בעמודי המשנה הקישורים היחסיים זהים; רק העוגן משתנה
+            anchor = "#services" if is_index else "index.html#services"
+            nav, mob, foot, grid = [], [], [], []
+            for i, s in enumerate(clean):
+                href = esc(s["href"])
+                name = esc(s["name"])
+                icon = esc(s["icon"])
+                nav.append(f'            <a href="{href}"><svg><use href="#{icon}"></use></svg>'
+                           f'<span>{name}</span></a>')
+                mob.append(f'        <li><a href="{href}">{name}</a></li>')
+                foot.append(f'        <li><a href="{href}">{name}</a></li>')
+                grid.append(
+                    f'        <article class="service-card reveal" data-reveal="" data-delay="{(i % 3) * 80}">\n'
+                    f'          <div class="service-icon"><svg><use href="#{icon}"></use></svg></div>\n'
+                    f'          <h3>{name}</h3>\n'
+                    f'          <p>{esc(s["desc"])}</p>\n'
+                    f'          <a href="{href}" class="card-link"><span>קראו עוד</span>'
+                    f'<svg><use href="#i-arrow"></use></svg></a>\n'
+                    f'        </article>')
+            return {
+                "NAV-SERVICES": "\n" + "\n".join(nav) + "\n",
+                "MOBILE-SERVICES": "\n" + "\n".join(mob) + "\n      ",
+                "FOOTER-SERVICES": "\n" + "\n".join(foot) + "\n      ",
+                "SERVICES-GRID": "\n" + "\n".join(grid) + "\n      ",
+            }
+
+        os.makedirs(BACKUP_DIR, exist_ok=True)
+        stamp = datetime.datetime.now().strftime("%Y%m%d-%H%M%S")
+        touched, skipped = [], []
+
+        for name in sorted(os.listdir(ROOT)):
+            if not name.endswith(".html"):
+                continue
+            target = os.path.join(ROOT, name)
+            if not os.path.isfile(target):
+                continue
+
+            with open(target, "r", encoding="utf-8") as fh:
+                html = fh.read()
+
+            regions = blocks(name == "index.html")
+            changed = False
+            for tag, body in regions.items():
+                pat = re.compile(
+                    r"(<!-- NED:%s -->).*?(<!-- /NED:%s -->)" % (tag, tag), re.S)
+                if pat.search(html):
+                    html = pat.sub(lambda m: m.group(1) + body + m.group(2), html, count=1)
+                    changed = True
+
+            if not changed:
+                skipped.append(name)
+                continue
+
+            shutil.copy2(target, os.path.join(BACKUP_DIR, "%s.%s.bak" % (name, stamp)))
+            with open(target, "w", encoding="utf-8") as fh:
+                fh.write(html)
+            touched.append(name)
+
+        return self.send_json({
+            "ok": True, "files": touched, "skipped": skipped,
+            "count": len(clean), "backup": stamp,
+        })
 
     def handle_upload(self):
         data = self.read_json()
